@@ -17,16 +17,17 @@ export function DayTabs({ weekDays, selectedDate, onSelect }: DayTabsProps) {
         const isSelected = dStr === formatYMD(selectedDate);
         const dayIsHoliday = isHoliday(dStr);
         const batchLabel = isDesignatedDay(1, d)
-          ? "Batch 1"
+          ? "B1"
           : isDesignatedDay(2, d)
-            ? "Batch 2"
+            ? "B2"
             : null;
 
         return (
           <Button
             key={dStr}
             variant={isSelected ? "default" : "outline"}
-            className={`relative flex h-auto min-w-0 flex-col items-center justify-center rounded-xl border px-2 py-2 text-center text-foreground whitespace-normal transition-all duration-200 ${isSelected ? "scale-[1.02] border-primary/35 shadow-[0_10px_18px_rgba(14,88,112,0.24)]" : "border-border/50 bg-background/70 hover:border-primary/25 hover:bg-background"}${dayIsHoliday ? " opacity-55" : ""}`}
+            className={`relative flex min-h-[86px] min-w-0 flex-col items-center justify-center rounded-xl border px-2 py-2 text-center text-foreground transition-all duration-200 ${isSelected ? "scale-[1.02] border-primary/35 shadow-[0_10px_18px_rgba(14,88,112,0.24)]" : "border-border/50 bg-background/70 hover:border-primary/25 hover:bg-background"}${dayIsHoliday ? " opacity-55" : ""}`}
+            sx={{ whiteSpace: "normal", lineHeight: 1.05 }}
             onClick={() => onSelect(d)}
           >
             <span className="block text-[10px] font-semibold uppercase tracking-[0.08em] opacity-70 leading-none">
@@ -43,7 +44,7 @@ export function DayTabs({ weekDays, selectedDate, onSelect }: DayTabsProps) {
                 Holiday
               </span>
             ) : batchLabel ? (
-              <span className="mt-1 block text-center text-[9px] font-semibold uppercase tracking-[0.06em] opacity-65 leading-none">
+              <span className="mt-1 block text-center text-[9px] font-semibold uppercase tracking-[0.08em] opacity-70 leading-none">
                 {batchLabel}
               </span>
             ) : null}

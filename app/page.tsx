@@ -74,16 +74,25 @@ function getSeatInfo(
 export default function Home() {
   const { user, isReady } = useRequireAuth("/login?redirect=/");
 
-  const [currentWeekMonday, setCurrentWeekMonday] = useState<Date>(() => {
-    const d = new Date();
+  const getMonday = (date: Date) => {
+    const d = new Date(date);
     const day = d.getDay();
     const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-    return new Date(d.setDate(diff));
+    d.setDate(diff);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  };
+
+  const [currentWeekMonday, setCurrentWeekMonday] = useState<Date>(() => {
+    return getMonday(new Date());
   });
   const [selectedDate, setSelectedDate] = useState<Date>(currentWeekMonday);
   const [allocation, setAllocation] = useState<AllocationData | null>(null);
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState<number | null>(null);
+
+  const todayWeekMonday = useMemo(() => getMonday(new Date()), []);
+  const disablePrevWeek = currentWeekMonday <= todayWeekMonday;
 
   const weekDays = useMemo(() => {
     return Array.from({ length: 5 }).map((_, i) => {
@@ -202,6 +211,7 @@ export default function Home() {
             <WeekNav
               currentWeekMonday={currentWeekMonday}
               onPrev={() => {
+                if (disablePrevWeek) return;
                 const d = new Date(currentWeekMonday);
                 d.setDate(d.getDate() - 7);
                 setCurrentWeekMonday(d);
@@ -211,6 +221,7 @@ export default function Home() {
                 d.setDate(d.getDate() + 7);
                 setCurrentWeekMonday(d);
               }}
+              disablePrev={disablePrevWeek}
             />
 
             <DayTabs

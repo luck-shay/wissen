@@ -18,7 +18,7 @@ function ActionButton({
     <Button
       size="sm"
       variant={variant}
-      className={`h-6 w-full rounded-full text-[10px] font-semibold tracking-wide${
+      className={`h-7 w-full rounded-full px-2 text-[9px] leading-none font-semibold tracking-wide whitespace-nowrap${
         variant === "outline" && label === "Undo Vacate"
           ? " bg-background border-orange-400/50 text-orange-600"
           : variant === "outline"
@@ -120,7 +120,7 @@ export function SeatCard({
 
         {status === "your-seat-vacated" && (
           <ActionButton
-            label="Undo Vacate"
+            label="Undo"
             variant="outline"
             isLoading={isLoadingThis}
             onClick={() => onAction("cancel", seatNumber)}
