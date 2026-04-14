@@ -4,7 +4,7 @@ import Booking from "@/models/Booking";
 import User, { IUserDocument } from "@/models/User";
 import { cookies } from "next/headers";
 import { verifyToken } from "@/lib/jwt";
-import { isNonDesignatedBookingAllowed, isDesignatedDay, isHoliday } from "@/lib/dateUtils";
+import { isNonDesignatedBookingAllowed, isDesignatedDay, isHoliday } from "@/lib/utils/dateUtils";
 
 async function getUserFromReq(): Promise<IUserDocument | null> {
   const cookieStore = await cookies();

@@ -11,7 +11,7 @@ import {
   isDesignatedDay,
   isHoliday,
   isNonDesignatedBookingAllowed,
-} from "@/lib/dateUtils";
+} from "@/lib/utils/dateUtils";
 import { WeekNav } from "@/components/seats/WeekNav";
 import { DayTabs } from "@/components/seats/DayTabs";
 import { ContextBanner } from "@/components/seats/ContextBanner";

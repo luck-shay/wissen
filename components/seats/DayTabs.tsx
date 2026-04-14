@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { formatYMD, isDesignatedDay, isHoliday } from "@/lib/dateUtils";
+import { formatYMD, isDesignatedDay, isHoliday } from "@/lib/utils/dateUtils";
 
 interface DayTabsProps {
   weekDays: Date[];

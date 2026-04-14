@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getSession } from "@/lib/api-utils";
+import { getSession } from "@/lib/utils/api-utils";
 import { StatusCodes } from "http-status-codes";
 
 export async function GET() {

@@ -3,7 +3,7 @@ import { StatusCodes } from "http-status-codes";
 import * as argon2 from "argon2";
 import User from "@/models/User";
 import "@/lib/db";
-import { createAuthCookie } from "@/lib/api-utils";
+import { createAuthCookie } from "@/lib/utils/api-utils";
 import { getBatchForSquad, getSquadDefaultSeatRange } from "@/lib/squads";
 
 export async function POST(req: NextRequest) {
