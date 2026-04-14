@@ -181,60 +181,96 @@ export default function Home() {
     squadNum: designatedBatch === 2 ? i + 6 : i + 1,
   }));
 
+  const bookedCount = todaysBookings.filter((b) => b.type === "book").length;
+  const releasedCount = todaysBookings.filter((b) => b.type === "release").length;
+  const floaterOpenCount = Array.from({ length: 10 }).filter((_, i) => {
+    const info = seatInfos.get(41 + i + 0);
+    return info?.status === "available-floater";
+  }).length;
+
   return (
-    <div className="relative min-h-screen bg-background text-foreground">
+    <div className="relative min-h-screen overflow-x-hidden bg-background text-foreground">
+      <div className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute inset-x-0 top-0 h-72 bg-gradient-to-b from-cyan-500/10 via-teal-500/5 to-transparent" />
+        <div className="absolute -left-24 top-28 h-64 w-64 rounded-full bg-cyan-300/10 blur-3xl" />
+        <div className="absolute -right-24 top-36 h-72 w-72 rounded-full bg-emerald-300/10 blur-3xl" />
+      </div>
       <AppHeader />
-      <main className="max-w-6xl mx-auto px-4 pt-24 pb-12">
-        <WeekNav
-          currentWeekMonday={currentWeekMonday}
-          onPrev={() => {
-            const d = new Date(currentWeekMonday);
-            d.setDate(d.getDate() - 7);
-            setCurrentWeekMonday(d);
-          }}
-          onNext={() => {
-            const d = new Date(currentWeekMonday);
-            d.setDate(d.getDate() + 7);
-            setCurrentWeekMonday(d);
-          }}
-        />
+      <main className="mx-auto max-w-7xl px-4 pb-12 pt-24 reveal-up">
+        <div className="grid items-start gap-6 lg:grid-cols-[330px_1fr]">
+          <aside className="glass-panel sticky top-22 rounded-3xl p-4 shadow-[0_14px_26px_rgba(0,0,0,0.28)] reveal-up">
+            <WeekNav
+              currentWeekMonday={currentWeekMonday}
+              onPrev={() => {
+                const d = new Date(currentWeekMonday);
+                d.setDate(d.getDate() - 7);
+                setCurrentWeekMonday(d);
+              }}
+              onNext={() => {
+                const d = new Date(currentWeekMonday);
+                d.setDate(d.getDate() + 7);
+                setCurrentWeekMonday(d);
+              }}
+            />
 
-        <DayTabs
-          weekDays={weekDays}
-          selectedDate={selectedDate}
-          onSelect={setSelectedDate}
-        />
+            <DayTabs
+              weekDays={weekDays}
+              selectedDate={selectedDate}
+              onSelect={setSelectedDate}
+            />
 
-        {loading ? (
-          <div className="flex justify-center p-12">
-            <Spinner className="size-8" />
-          </div>
-        ) : selectedIsHoliday ? (
-          <div className="flex flex-col items-center justify-center gap-3 py-20 text-center">
-            <span className="text-4xl">🎉</span>
-            <p className="text-xl font-semibold">It&apos;s a holiday!</p>
-            <p className="text-sm text-muted-foreground">
-              Booking is not available on this day.
-            </p>
-          </div>
-        ) : (
-          <>
             <ContextBanner
               userIsDesignated={userIsDesignated}
               canBookNonDesignated={canBookNonDesignated}
             />
-            <SeatGrid
-              squadBlocks={squadBlocks}
-              designatedBatch={designatedBatch}
-              seatInfos={seatInfos}
-              userIsDesignated={userIsDesignated}
-              canBookNonDesignated={canBookNonDesignated}
-              userAlreadyBooked={userAlreadyBooked}
-              actionLoading={actionLoading}
-              onAction={handleAction}
-            />
-          </>
-        )}
+
+            <div className="grid grid-cols-2 gap-2 pt-1">
+              <div className="rounded-2xl border border-border/70 bg-background/50 p-3">
+                <p className="text-[11px] uppercase tracking-widest text-muted-foreground">Booked</p>
+                <p className="mt-1 text-2xl font-bold">{bookedCount}</p>
+              </div>
+              <div className="rounded-2xl border border-border/70 bg-background/50 p-3">
+                <p className="text-[11px] uppercase tracking-widest text-muted-foreground">Released</p>
+                <p className="mt-1 text-2xl font-bold">{releasedCount}</p>
+              </div>
+              <div className="rounded-2xl border border-border/70 bg-background/50 p-3">
+                <p className="text-[11px] uppercase tracking-widest text-muted-foreground">Floater Open</p>
+                <p className="mt-1 text-2xl font-bold">{floaterOpenCount}</p>
+              </div>
+              <div className="rounded-2xl border border-border/70 bg-background/50 p-3">
+                <p className="text-[11px] uppercase tracking-widest text-muted-foreground">Mode</p>
+                <p className="mt-1 text-sm font-semibold">{userIsDesignated ? "Designated" : "Non-designated"}</p>
+              </div>
+            </div>
+          </aside>
+
+          <section className="space-y-4 reveal-up reveal-delay-1">
+            {loading ? (
+              <div className="glass-panel flex justify-center rounded-3xl p-12">
+                <Spinner className="size-8" />
+              </div>
+            ) : selectedIsHoliday ? (
+              <div className="glass-panel flex flex-col items-center justify-center gap-3 rounded-3xl py-20 text-center shadow-sm">
+                <span className="text-4xl">🎉</span>
+                <p className="text-xl font-semibold">It&apos;s a holiday!</p>
+                <p className="text-sm text-muted-foreground">
+                  Booking is not available on this day.
+                </p>
+              </div>
+            ) : (
+              <SeatGrid
+                squadBlocks={squadBlocks}
+                designatedBatch={designatedBatch}
+                seatInfos={seatInfos}
+                userIsDesignated={userIsDesignated}
+                canBookNonDesignated={canBookNonDesignated}
+                userAlreadyBooked={userAlreadyBooked}
+                actionLoading={actionLoading}
+                onAction={handleAction}
+              />
+            )}
+          </section>
+        </div>
       </main>
     </div>
   );

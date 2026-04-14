@@ -52,7 +52,7 @@ export function NavUser() {
 
   if (!hydrated || isPending) {
     return (
-      <div className="flex items-center gap-2 px-3 py-2">
+      <div className="flex items-center gap-2 rounded-full border border-border/60 px-3 py-2">
         <Skeleton className="h-8 w-8 rounded-lg" />
         <div className="grid gap-1">
           <Skeleton className="h-3 w-24" />
@@ -65,12 +65,12 @@ export function NavUser() {
 
   if (!user) {
     return (
-      <div className="flex gap-2">
-        <Button>
-          <Link href="/login">Login</Link>
+      <div className="flex gap-2 reveal-up reveal-delay-1">
+        <Button component={Link} href="/login">
+          Login
         </Button>
-        <Button variant="outline">
-          <Link href="/register">Register</Link>
+        <Button component={Link} href="/register" variant="outline">
+          Register
         </Button>
       </div>
     );
@@ -86,7 +86,7 @@ export function NavUser() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-accent hover:text-accent-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+      <DropdownMenuTrigger className="flex items-center gap-2 rounded-full border border-border/60 bg-card/85 px-3 py-1.5 text-sm shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-accent/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
         <Avatar className="h-8 w-8 rounded-lg">
           <AvatarImage src="" alt={user.name ?? user.email} />
           <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
@@ -104,11 +104,11 @@ export function NavUser() {
         <ChevronsUpDown className="ml-auto size-4 shrink-0 opacity-50" />
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        className="min-w-56 rounded-lg"
+        className="min-w-56 rounded-2xl"
         align="end"
         sideOffset={4}
       >
-        <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+        <div className="flex items-center gap-2 px-2 py-2 text-left text-sm">
           <Avatar className="h-8 w-8 rounded-lg">
             <AvatarImage src="" alt={user.name ?? user.email} />
             <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
@@ -126,7 +126,7 @@ export function NavUser() {
         </div>
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem onClick={handleSignOut}>
+        <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
           <LogOut className="mr-2 size-4" />
           Log out
         </DropdownMenuItem>

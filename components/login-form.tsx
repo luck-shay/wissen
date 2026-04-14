@@ -81,10 +81,13 @@ export function LoginForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
+      <Card className="overflow-hidden border border-border/60 bg-card/88 shadow-[0_24px_40px_rgba(7,39,54,0.2)] backdrop-blur-md">
         <CardHeader>
-          <CardTitle>Login to your account</CardTitle>
-          <CardDescription>
+          <div className="mb-2 inline-flex w-fit rounded-full border border-cyan-500/20 bg-cyan-500/15 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-cyan-700">
+            Secure Access
+          </div>
+          <CardTitle className="text-2xl">Login to your account</CardTitle>
+          <CardDescription className="text-sm">
             Enter your email below to login to your account
           </CardDescription>
         </CardHeader>

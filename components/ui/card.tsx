@@ -1,4 +1,11 @@
+"use client"
+
 import * as React from "react"
+import MuiCard from "@mui/material/Card"
+import MuiCardContent from "@mui/material/CardContent"
+import MuiCardActions from "@mui/material/CardActions"
+import Typography from "@mui/material/Typography"
+import Box from "@mui/material/Box"
 
 import { cn } from "@/lib/utils"
 
@@ -8,13 +15,18 @@ function Card({
   ...props
 }: React.ComponentProps<"div"> & { size?: "default" | "sm" }) {
   return (
-    <div
+    <MuiCard
       data-slot="card"
-      data-size={size}
-      className={cn(
-        "group/card flex flex-col gap-4 overflow-hidden rounded-xl bg-card py-4 text-sm text-card-foreground ring-1 ring-foreground/10 has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:gap-3 data-[size=sm]:py-3 data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl",
-        className
-      )}
+      className={cn("rounded-xl", className)}
+      sx={{
+        borderRadius: 4,
+        py: size === "sm" ? 1 : 2,
+        border: "1px solid",
+        borderColor: "divider",
+        background: "linear-gradient(135deg, color-mix(in oklab, var(--card) 90%, white 10%), color-mix(in oklab, var(--card) 96%, transparent 4%))",
+        backdropFilter: "blur(10px)",
+        boxShadow: "0 16px 34px rgba(6, 40, 54, 0.12)",
+      }}
       {...props}
     />
   )
@@ -22,12 +34,11 @@ function Card({
 
 function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <div
+    <Box
+      component="div"
       data-slot="card-header"
-      className={cn(
-        "group/card-header @container/card-header grid auto-rows-min items-start gap-1 rounded-t-xl px-4 group-data-[size=sm]/card:px-3 has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto] [.border-b]:pb-4 group-data-[size=sm]/card:[.border-b]:pb-3",
-        className
-      )}
+      className={cn(className)}
+      sx={{ px: 2, pb: 1 }}
       {...props}
     />
   )
@@ -35,12 +46,12 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
 
 function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <div
+    <Typography
+      component="div"
+      variant="h6"
       data-slot="card-title"
-      className={cn(
-        "font-heading text-base leading-snug font-medium group-data-[size=sm]/card:text-sm",
-        className
-      )}
+      className={cn(className)}
+      sx={{ fontWeight: 700, letterSpacing: "-0.02em" }}
       {...props}
     />
   )
@@ -48,9 +59,12 @@ function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
 
 function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <div
+    <Typography
+      component="div"
+      variant="body2"
       data-slot="card-description"
-      className={cn("text-sm text-muted-foreground", className)}
+      className={cn(className)}
+      color="text.secondary"
       {...props}
     />
   )
@@ -71,9 +85,10 @@ function CardAction({ className, ...props }: React.ComponentProps<"div">) {
 
 function CardContent({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <div
+    <MuiCardContent
       data-slot="card-content"
-      className={cn("px-4 group-data-[size=sm]/card:px-3", className)}
+      className={cn(className)}
+      sx={{ pt: 0, px: 2 }}
       {...props}
     />
   )
@@ -81,12 +96,9 @@ function CardContent({ className, ...props }: React.ComponentProps<"div">) {
 
 function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <div
+    <MuiCardActions
       data-slot="card-footer"
-      className={cn(
-        "flex items-center rounded-b-xl border-t bg-muted/50 p-4 group-data-[size=sm]/card:p-3",
-        className
-      )}
+      className={cn(className)}
       {...props}
     />
   )

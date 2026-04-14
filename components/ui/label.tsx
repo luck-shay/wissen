@@ -1,17 +1,25 @@
 "use client"
 
 import * as React from "react"
+import Box from "@mui/material/Box"
 
 import { cn } from "@/lib/utils"
 
 function Label({ className, ...props }: React.ComponentProps<"label">) {
   return (
-    <label
+    <Box
+      component="label"
       data-slot="label"
-      className={cn(
-        "flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50",
-        className
-      )}
+      className={cn(className)}
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        gap: 0.5,
+        fontSize: 14,
+        fontWeight: 500,
+        lineHeight: 1.2,
+        color: "text.primary",
+      }}
       {...props}
     />
   )

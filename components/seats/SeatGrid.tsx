@@ -26,12 +26,12 @@ function SectionDivider({
   right: string;
 }) {
   return (
-    <div className="flex items-center gap-3 mb-4">
-      <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground shrink-0">
+    <div className="mb-4 flex items-center gap-3">
+      <h2 className="shrink-0 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
         {title}
       </h2>
-      <div className="flex-1 border-t border-border" />
-      <span className="text-xs text-muted-foreground shrink-0">{right}</span>
+      <div className="h-px flex-1 bg-gradient-to-r from-border to-transparent" />
+      <span className="shrink-0 text-xs text-muted-foreground">{right}</span>
     </div>
   );
 }
@@ -51,9 +51,9 @@ export function SeatGrid({
   return (
     <>
       {/* Legend */}
-      <div className="mb-6 flex flex-wrap gap-x-4 gap-y-2">
+      <div className="glass-panel reveal-up reveal-delay-1 mb-6 flex flex-wrap gap-x-4 gap-y-2 rounded-2xl p-4 shadow-[0_10px_24px_rgba(9,37,52,0.12)]">
         {LEGEND.map(({ cls, label }) => (
-          <div key={label} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          <div key={label} className="flex items-center gap-1.5 text-xs text-muted-foreground/90">
             <div className={`size-3.5 shrink-0 rounded border ${cls}`} />
             {label}
           </div>
@@ -61,7 +61,7 @@ export function SeatGrid({
       </div>
 
       {/* Designated Seats 1–40 */}
-      <div className="mb-10">
+      <div className="glass-panel reveal-up reveal-delay-2 mb-10 rounded-2xl p-4 shadow-[0_12px_24px_rgba(8,36,51,0.12)] sm:p-5">
         <SectionDivider
           title="Designated Seats"
           right={designatedBatch ? `Batch ${designatedBatch} in office today` : "—"}
@@ -69,7 +69,7 @@ export function SeatGrid({
         <div className="space-y-5">
           {squadBlocks.map(({ seatStart, seatEnd, squadNum }) => (
             <div key={squadNum}>
-              <p className="text-xs font-medium text-muted-foreground mb-2">
+              <p className="mb-2 text-xs font-medium text-muted-foreground">
                 Squad {squadNum}
                 <span className="opacity-50"> · seats {seatStart}–{seatEnd}</span>
               </p>
@@ -92,7 +92,7 @@ export function SeatGrid({
       </div>
 
       {/* Floater Seats 41–50 */}
-      <div>
+      <div className="glass-panel reveal-up reveal-delay-2 rounded-2xl p-4 shadow-[0_12px_24px_rgba(8,36,51,0.12)] sm:p-5">
         <SectionDivider
           title="Floater Seats"
           right={canBookNonDesignated ? "Open to non-designated teams" : "Opens after 3 PM"}

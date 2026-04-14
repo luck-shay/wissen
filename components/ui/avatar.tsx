@@ -1,56 +1,70 @@
 "use client"
 
 import * as React from "react"
-import { Avatar as AvatarPrimitive } from "@base-ui/react/avatar"
+import MuiAvatar from "@mui/material/Avatar"
 
 import { cn } from "@/lib/utils"
+
+type AvatarImageProps = React.ImgHTMLAttributes<HTMLImageElement>
+type AvatarFallbackProps = React.ComponentProps<"span">
+
+function AvatarImage(props: AvatarImageProps) {
+  void props
+  return null
+}
+
+AvatarImage.displayName = "AvatarImage"
+
+function AvatarFallback({ className, ...props }: AvatarFallbackProps) {
+  return <span className={cn(className)} {...props} />
+}
+
+AvatarFallback.displayName = "AvatarFallback"
 
 function Avatar({
   className,
   size = "default",
+  children,
   ...props
-}: AvatarPrimitive.Root.Props & {
+}: React.ComponentProps<typeof MuiAvatar> & {
   size?: "default" | "sm" | "lg"
 }) {
+  let src: string | undefined
+  let alt: string | undefined
+  let fallback: React.ReactNode = null
+
+  React.Children.forEach(children, (child) => {
+    if (!React.isValidElement(child)) return
+
+    if (child.type === AvatarImage) {
+      const imageProps = child.props as AvatarImageProps
+      src = typeof imageProps.src === "string" ? imageProps.src : undefined
+      alt = imageProps.alt
+    }
+
+    if (child.type === AvatarFallback) {
+      fallback = (child.props as AvatarFallbackProps).children
+    }
+  })
+
   return (
-    <AvatarPrimitive.Root
+    <MuiAvatar
       data-slot="avatar"
-      data-size={size}
       className={cn(
-        "group/avatar relative flex size-8 shrink-0 rounded-full select-none after:absolute after:inset-0 after:rounded-full after:border after:border-border after:mix-blend-darken data-[size=lg]:size-10 data-[size=sm]:size-6 dark:after:mix-blend-lighten",
+        "group/avatar relative shrink-0",
         className
       )}
+      src={src}
+      alt={alt}
+      sx={{
+        width: size === "lg" ? 40 : size === "sm" ? 24 : 32,
+        height: size === "lg" ? 40 : size === "sm" ? 24 : 32,
+        fontSize: size === "sm" ? 12 : 14,
+      }}
       {...props}
-    />
-  )
-}
-
-function AvatarImage({ className, ...props }: AvatarPrimitive.Image.Props) {
-  return (
-    <AvatarPrimitive.Image
-      data-slot="avatar-image"
-      className={cn(
-        "aspect-square size-full rounded-full object-cover",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-function AvatarFallback({
-  className,
-  ...props
-}: AvatarPrimitive.Fallback.Props) {
-  return (
-    <AvatarPrimitive.Fallback
-      data-slot="avatar-fallback"
-      className={cn(
-        "flex size-full items-center justify-center rounded-full bg-muted text-sm text-muted-foreground group-data-[size=sm]/avatar:text-xs",
-        className
-      )}
-      {...props}
-    />
+    >
+      {fallback}
+    </MuiAvatar>
   )
 }
 

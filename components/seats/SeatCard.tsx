@@ -18,7 +18,7 @@ function ActionButton({
     <Button
       size="sm"
       variant={variant}
-      className={`h-6 text-[10px] w-full${
+      className={`h-6 w-full rounded-full text-[10px] font-semibold tracking-wide${
         variant === "outline" && label === "Undo Vacate"
           ? " bg-background border-orange-400/50 text-orange-600"
           : variant === "outline"
@@ -74,9 +74,10 @@ export function SeatCard({
 
   return (
     <div
-      className={`relative p-2.5 flex flex-col justify-between border rounded-xl shadow-sm min-h-26 ${STATUS_STYLES[status]}${floaterLocked ? " opacity-40" : ""}`}
+      className={`relative flex min-h-26 flex-col justify-between rounded-xl border p-2.5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_12px_22px_rgba(10,43,59,0.2)] ${STATUS_STYLES[status]}${floaterLocked ? " opacity-40" : ""}`}
     >
-      <span className="text-[10px] font-mono text-muted-foreground">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-8 rounded-t-xl bg-gradient-to-b from-white/30 to-transparent" />
+      <span className="text-[10px] font-mono font-semibold text-muted-foreground">
         #{seatNumber}
       </span>
 
@@ -89,14 +90,14 @@ export function SeatCard({
           </>
         ) : occupant ? (
           <>
-            <div className="size-7 bg-secondary text-secondary-foreground rounded-full flex items-center justify-center font-bold text-[11px]">
+            <div className="flex size-7 items-center justify-center rounded-full bg-secondary text-[11px] font-bold text-secondary-foreground shadow-inner">
               {occupant.name.charAt(0).toUpperCase()}
             </div>
-            <p className="text-[10px] leading-tight font-medium max-w-18 truncate text-center">
+            <p className="max-w-18 truncate text-center text-[10px] font-medium leading-tight">
               {occupant.name}
             </p>
             {status === "your-seat-taken" && (
-              <span className="text-[9px] text-orange-500">taken</span>
+              <span className="rounded-full bg-orange-500/15 px-1.5 py-0.5 text-[9px] font-semibold text-orange-500">taken</span>
             )}
           </>
         ) : (

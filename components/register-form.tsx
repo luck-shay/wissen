@@ -72,10 +72,13 @@ export function RegisterForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
+      <Card className="overflow-hidden border border-border/60 bg-card/88 shadow-[0_24px_40px_rgba(7,39,54,0.2)] backdrop-blur-md">
         <CardHeader>
-          <CardTitle>Create an account</CardTitle>
-          <CardDescription>
+          <div className="mb-2 inline-flex w-fit rounded-full border border-emerald-500/20 bg-emerald-500/15 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-emerald-700">
+            New Account
+          </div>
+          <CardTitle className="text-2xl">Create an account</CardTitle>
+          <CardDescription className="text-sm">
             Enter your email below to create your account
           </CardDescription>
         </CardHeader>
@@ -133,7 +136,7 @@ export function RegisterForm({
                       {...field}
                       onChange={(e) => field.onChange(Number(e.target.value))}
                       id={field.name}
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      className="flex h-10 w-full rounded-lg border border-input bg-background/80 px-3 py-2 text-sm shadow-sm ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     >
                       <option value={0} disabled>
                         Select your squad

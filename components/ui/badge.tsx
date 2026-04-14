@@ -1,6 +1,7 @@
-import { mergeProps } from "@base-ui/react/merge-props"
-import { useRender } from "@base-ui/react/use-render"
-import { cva, type VariantProps } from "class-variance-authority"
+"use client"
+
+import Chip from "@mui/material/Chip"
+import { cva } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 
@@ -27,26 +28,35 @@ const badgeVariants = cva(
   }
 )
 
+type BadgeVariant =
+  | "default"
+  | "secondary"
+  | "destructive"
+  | "outline"
+  | "ghost"
+  | "link"
+
+type BadgeProps = Omit<React.ComponentProps<typeof Chip>, "variant" | "color"> & {
+  variant?: BadgeVariant
+}
+
 function Badge({
   className,
   variant = "default",
-  render,
+  children,
   ...props
-}: useRender.ComponentProps<"span"> & VariantProps<typeof badgeVariants>) {
-  return useRender({
-    defaultTagName: "span",
-    props: mergeProps<"span">(
-      {
-        className: cn(badgeVariants({ variant }), className),
-      },
-      props
-    ),
-    render,
-    state: {
-      slot: "badge",
-      variant,
-    },
-  })
+}: BadgeProps) {
+  return (
+    <Chip
+      data-slot="badge"
+      size="small"
+      label={children}
+      color={variant === "destructive" ? "error" : variant === "secondary" ? "secondary" : "primary"}
+      variant={variant === "outline" ? "outlined" : "filled"}
+      className={cn(badgeVariants({ variant }), className)}
+      {...props}
+    />
+  )
 }
 
 export { Badge, badgeVariants }
