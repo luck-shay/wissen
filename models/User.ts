@@ -4,6 +4,7 @@ export interface IUser {
   name: string;
   email: string;
   password: string; // hashed
+  role?: "user" | "admin";
   squad: number;
   batch: number; // 1 or 2
   defaultSeat: number; // 1 to 40
@@ -26,6 +27,7 @@ const UserSchema = new Schema<IUserDocument>(
       trim: true,
     },
     password: { type: String, required: true },
+    role: { type: String, enum: ["user", "admin"], default: "user" },
     squad: { type: Number },
     batch: { type: Number },
     defaultSeat: { type: Number },

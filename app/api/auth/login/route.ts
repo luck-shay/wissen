@@ -4,6 +4,7 @@ import * as argon2 from "argon2";
 import User, { IUserLean } from "@/models/User";
 import "@/lib/db";
 import { createAuthCookie } from "@/lib/utils/api-utils";
+import { ADMIN_EMAIL, ensureAdminUserExists } from "@/lib/admin";
 
 export async function POST(req: NextRequest) {
   try {
@@ -15,7 +16,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const user = (await User.findOne({ email }).lean()) as IUserLean | null;
+    const normalizedEmail = String(email).toLowerCase();
+    if (normalizedEmail === ADMIN_EMAIL) {
+      await ensureAdminUserExists();
+    }
+
+    const user = (await User.findOne({ email: normalizedEmail }).lean()) as IUserLean | null;
     if (!user) {
       return NextResponse.json(
         { error: "Invalid credentials" },
@@ -33,7 +39,17 @@ export async function POST(req: NextRequest) {
 
     // Update user payload to contain new fields
     const response = NextResponse.json(
-      { user: { id: user._id, email: user.email, name: user.name, squad: user.squad, batch: user.batch, defaultSeat: user.defaultSeat } },
+      {
+        user: {
+          id: user._id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          squad: user.squad,
+          batch: user.batch,
+          defaultSeat: user.defaultSeat,
+        },
+      },
       { status: StatusCodes.OK },
     );
     await createAuthCookie(response, user);

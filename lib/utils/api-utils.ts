@@ -11,6 +11,7 @@ export async function createAuthCookie(
     _id: unknown;
     email: string;
     name: string;
+    role?: "user" | "admin";
     squad?: number;
     batch?: number;
     defaultSeat?: number;
@@ -20,6 +21,7 @@ export async function createAuthCookie(
     userId: String(user._id),
     email: user.email,
     name: user.name,
+    role: user.role,
     squad: user.squad,
     batch: user.batch,
     defaultSeat: user.defaultSeat,
@@ -63,6 +65,7 @@ export async function getSession() {
       id: decoded.userId as string,
       email: decoded.email as string,
       name: decoded.name as string,
+      role: decoded.role as "user" | "admin" | undefined,
       squad: decoded.squad as number | undefined,
       batch: decoded.batch as number | undefined,
       defaultSeat: decoded.defaultSeat as number | undefined,

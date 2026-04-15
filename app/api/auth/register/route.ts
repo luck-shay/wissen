@@ -5,6 +5,7 @@ import User from "@/models/User";
 import "@/lib/db";
 import { createAuthCookie } from "@/lib/utils/api-utils";
 import { getBatchForSquad, getSquadDefaultSeatRange } from "@/lib/squads";
+import { ADMIN_EMAIL } from "@/lib/admin";
 
 export async function POST(req: NextRequest) {
   try {
@@ -16,7 +17,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const existingUser = await User.findOne({ email });
+    const normalizedEmail = String(email).toLowerCase();
+    if (normalizedEmail === ADMIN_EMAIL) {
+      return NextResponse.json(
+        { error: "This email is reserved for system administration" },
+        { status: StatusCodes.BAD_REQUEST },
+      );
+    }
+
+    const existingUser = await User.findOne({ email: normalizedEmail });
     if (existingUser) {
       return NextResponse.json(
         { error: "User already exists" },
@@ -46,15 +55,26 @@ export async function POST(req: NextRequest) {
     const hashedPassword = await argon2.hash(password);
     const user = await User.create({
       name: name || email,
-      email,
+      email: normalizedEmail,
       password: hashedPassword,
+      role: "user",
       squad: parsedSquad,
       batch,
       defaultSeat
     });
 
     const response = NextResponse.json(
-      { user: { id: user._id, email: user.email, name: user.name, squad: user.squad, batch: user.batch, defaultSeat: user.defaultSeat } },
+      {
+        user: {
+          id: user._id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          squad: user.squad,
+          batch: user.batch,
+          defaultSeat: user.defaultSeat,
+        },
+      },
       { status: StatusCodes.CREATED },
     );
     await createAuthCookie(response, user);

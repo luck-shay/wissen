@@ -3,9 +3,25 @@ import { persist } from "zustand/middleware";
 
 interface AuthStore {
   token: string | null;
-  user: { id: string; email: string; name: string; squad?: number; batch?: number; defaultSeat?: number } | null;
+  user: {
+    id: string;
+    email: string;
+    name: string;
+    role?: "user" | "admin";
+    squad?: number;
+    batch?: number;
+    defaultSeat?: number;
+  } | null;
   setToken: (token: string) => void;
-  setUser: (user: { id: string; email: string; name: string; squad?: number; batch?: number; defaultSeat?: number } | null) => void;
+  setUser: (user: {
+    id: string;
+    email: string;
+    name: string;
+    role?: "user" | "admin";
+    squad?: number;
+    batch?: number;
+    defaultSeat?: number;
+  } | null) => void;
   clearToken: () => void;
   clearAuth: () => void;
   hydrated: boolean;

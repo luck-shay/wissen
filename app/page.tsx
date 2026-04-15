@@ -16,6 +16,7 @@ import { WeekNav } from "@/components/seats/WeekNav";
 import { DayTabs } from "@/components/seats/DayTabs";
 import { ContextBanner } from "@/components/seats/ContextBanner";
 import { SeatGrid } from "@/components/seats/SeatGrid";
+import { AdminPanel } from "@/components/admin/AdminPanel";
 import type {
   AllocationData,
   BookingRecord,
@@ -226,6 +227,10 @@ export default function Home() {
               userIsDesignated={userIsDesignated}
               canBookNonDesignated={canBookNonDesignated}
             />
+
+            {user?.role === "admin" && (
+              <AdminPanel selectedDate={selectedDate} onRefresh={fetchAllocation} />
+            )}
 
             <div className="grid grid-cols-2 gap-2 pt-1">
               <div className="rounded-2xl border border-border/70 bg-background/50 p-3">
