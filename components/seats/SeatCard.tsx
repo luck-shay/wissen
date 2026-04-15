@@ -86,7 +86,7 @@ export function SeatCard({
         {floaterLocked ? (
           <>
             <Lock className="size-3.5 text-muted-foreground" />
-            <span className="text-[9px] text-muted-foreground">After 3 PM</span>
+            <span className="text-[9px] text-muted-foreground">After 10 AM</span>
           </>
         ) : occupant ? (
           <>
@@ -135,7 +135,7 @@ export function SeatCard({
           />
         )}
 
-        {status === "booked-by-you" && activeBooking && !isReleased && (
+        {status === "booked-by-you" && activeBooking && (
           <ActionButton
             label="Cancel"
             variant="destructive"

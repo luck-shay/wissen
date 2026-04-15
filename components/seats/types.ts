@@ -65,5 +65,5 @@ export const LEGEND = [
   { cls: "bg-sky-500/10 border-sky-500/30",                                  label: "Vacated - available to book" },
   { cls: "bg-blue-500/10 border-blue-500/30",                                label: "Floater - available" },
   { cls: "bg-muted/40 border-muted",                                         label: "Occupied" },
-  { cls: "bg-muted/20 border-muted/30 opacity-50",                           label: "Locked (opens 3 PM)" },
+  { cls: "bg-muted/20 border-muted/30 opacity-50",                           label: "Locked (opens 10 AM)" },
 ];
