@@ -2,7 +2,7 @@ import * as argon2 from "argon2";
 import User from "@/models/User";
 
 export const ADMIN_EMAIL = "admin@wissen.com";
-export const ADMIN_PASSWORD = "admin";
+export const ADMIN_PASSWORD = "Admin123";
 
 export async function ensureAdminUserExists() {
   const existing = await User.findOne({ email: ADMIN_EMAIL });
