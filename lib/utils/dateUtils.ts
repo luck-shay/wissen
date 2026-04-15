@@ -69,7 +69,7 @@ export function isDesignatedDay(batch: 1 | 2, dateInput: string | Date): boolean
 }
 
 // Check if booking is allowed today for a non-designated day.
-// Rule: non-designated seats open at 3 PM for the *next work day* only.
+// Rule: non-designated seats open in the 3 PM -> 10 AM window for the *next work day* only.
 // Booking for today (same-day) is always allowed.
 export function isNonDesignatedBookingAllowed(
   targetDateStr: string,
@@ -81,20 +81,22 @@ export function isNonDesignatedBookingAllowed(
   const todayStr = formatYMD(today);
   const targetStr = formatYMD(targetDate);
 
-  // Same day: always allowed
+  // Same day: always allowed.
   if (targetStr === todayStr) return true;
 
-  // Past: not allowed
+  // Past: not allowed.
   if (targetDate < today) return false;
 
-  // Next work day (skipping weekends + holidays): only allowed after 3 PM today
-  // In dev mode the 3 PM restriction is bypassed for easier testing.
+  // Next work day (skipping weekends + holidays): only allowed in the 3 PM -> 10 AM window.
+  const hour = now.getHours();
+  const withinBookingWindow = hour >= 15 || hour < 10;
+
   const nextWorkDay = getNextWorkDay(today);
   if (targetStr === formatYMD(nextWorkDay)) {
-    return process.env.NODE_ENV === "development" || now.getHours() >= 15;
+    return process.env.NODE_ENV === "development" || withinBookingWindow;
   }
 
-  // Any date beyond next work day: not allowed (bypassed in dev mode)
+  // Any date beyond next work day: not allowed (bypassed in dev mode).
   return process.env.NODE_ENV === "development";
 }
 

@@ -46,7 +46,13 @@ export function SeatGrid({
   actionLoading,
   onAction,
 }: SeatGridProps) {
-  const sharedCardProps = { userIsDesignated, canBookNonDesignated, userAlreadyBooked, actionLoading, onAction };
+  const sharedCardProps = {
+    userIsDesignated,
+    canBookNonDesignated,
+    userAlreadyBooked,
+    actionLoading,
+    onAction,
+  };
 
   return (
     <>
@@ -95,7 +101,7 @@ export function SeatGrid({
       <div className="glass-panel reveal-up reveal-delay-2 rounded-2xl p-4 shadow-[0_12px_24px_rgba(8,36,51,0.12)] sm:p-5">
         <SectionDivider
           title="Floater Seats"
-          right={canBookNonDesignated ? "Open to non-designated teams" : "Opens after 3 PM"}
+          right={canBookNonDesignated ? "Open to non-designated teams" : "Opens at 3 PM"}
         />
         <div className="grid grid-cols-5 sm:grid-cols-10 gap-2">
           {Array.from({ length: 10 }).map((_, i) => {

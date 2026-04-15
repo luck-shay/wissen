@@ -55,10 +55,10 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "You already have a designated seat on this day" }, { status: 400 });
       }
 
-      // Check 3 PM rule for non-designated bookings!
+      // Check the 3 PM -> 10 AM rule for non-designated bookings.
       const canBook = isNonDesignatedBookingAllowed(date);
       if (!canBook) {
-        return NextResponse.json({ error: "Booking for future non-designated days is only allowed after 3 PM of the prior work day." }, { status: 403 });
+        return NextResponse.json({ error: "Booking for future non-designated days is only allowed between 3 PM and 10 AM." }, { status: 403 });
       }
 
       if (!seatNumber) return NextResponse.json({ error: "seatNumber required to book" }, { status: 400 });

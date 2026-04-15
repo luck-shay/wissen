@@ -38,7 +38,7 @@ interface SeatCardProps {
   info: SeatInfo;
   /** Is today a designated day for the logged-in user? */
   userIsDesignated: boolean;
-  /** Has the 3 PM gate passed so non-designated users can book? */
+  /** Is the non-designated booking window currently open? */
   canBookNonDesignated: boolean;
   /** Has the user already booked any seat today? */
   userAlreadyBooked: boolean;
@@ -64,7 +64,7 @@ export function SeatCard({
 
   // A seat is bookable (Book button should show) when:
   // • it's a vacated designated seat and user is not designated, OR
-  // • it's a free floater and the 3 PM gate has passed and user is not designated
+  // • it's a free floater and the booking window is open and user is not designated
   // In both cases: user must not have already booked something today.
   const canBook =
     !userAlreadyBooked &&

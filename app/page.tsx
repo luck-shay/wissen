@@ -24,7 +24,20 @@ import type {
   UserRecord,
 } from "@/components/seats/types";
 
-// Derive the status of a single seat from today's bookings + the assigned owner.
+function startOfDay(date: Date): Date {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+function getMonday(date: Date): Date {
+  const d = startOfDay(date);
+  const day = d.getDay();
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+  d.setDate(diff);
+  return d;
+}
+
 function getSeatInfo(
   seatNumber: number,
   todaysBookings: BookingRecord[],
@@ -54,8 +67,7 @@ function getSeatInfo(
     else status = "available-floater";
   } else {
     if (isOwner && !isReleased) status = "your-seat";
-    else if (isOwner && isReleased && !activeBooking)
-      status = "your-seat-vacated";
+    else if (isOwner && isReleased && !activeBooking) status = "your-seat-vacated";
     else if (isOwner && isReleased) status = "your-seat-taken";
     else if (bookedByUser) status = "booked-by-you";
     else if (isReleased && !activeBooking) status = "available-released";
@@ -74,47 +86,23 @@ function getSeatInfo(
 export default function Home() {
   const { user, isReady } = useRequireAuth("/login?redirect=/");
 
-  const getMonday = (date: Date) => {
-    const d = new Date(date);
-    const day = d.getDay();
-    const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-    d.setDate(diff);
-    d.setHours(0, 0, 0, 0);
-    return d;
-  };
-
-  const [currentWeekMonday, setCurrentWeekMonday] = useState<Date>(() => {
-    return getMonday(new Date());
-  });
-  const [selectedDate, setSelectedDate] = useState<Date>(currentWeekMonday);
+  const [currentWeekMonday, setCurrentWeekMonday] = useState<Date>(() => getMonday(new Date()));
+  const [selectedDate, setSelectedDate] = useState<Date>(() => startOfDay(new Date()));
   const [allocation, setAllocation] = useState<AllocationData | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<number | null>(null);
 
-  const todayWeekMonday = useMemo(() => getMonday(new Date()), []);
-  const disablePrevWeek = currentWeekMonday <= todayWeekMonday;
-
   const weekDays = useMemo(() => {
-    return Array.from({ length: 5 }).map((_, i) => {
+    return Array.from({ length: 5 }, (_, i) => {
       const d = new Date(currentWeekMonday);
       d.setDate(currentWeekMonday.getDate() + i);
-      return d;
+      return startOfDay(d);
     });
   }, [currentWeekMonday]);
 
-  // Keep selectedDate in sync when the week changes.
-  useEffect(() => {
-    const inWeek = weekDays.some(
-      (d) => formatYMD(d) === formatYMD(selectedDate),
-    );
-    if (!inWeek) setSelectedDate(weekDays[0]);
-  }, [weekDays, selectedDate]);
-
-  useEffect(() => {
-    if (!isReady) return;
-    void fetchAllocation();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isReady, currentWeekMonday]);
+  const today = startOfDay(new Date());
+  const todayWeekMonday = getMonday(today);
+  const disablePrevWeek = currentWeekMonday <= todayWeekMonday;
 
   const fetchAllocation = async () => {
     setLoading(true);
@@ -129,6 +117,17 @@ export default function Home() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!isReady) return;
+    void fetchAllocation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isReady, currentWeekMonday]);
+
+  useEffect(() => {
+    const inWeek = weekDays.some((d) => formatYMD(d) === formatYMD(selectedDate));
+    if (!inWeek) setSelectedDate(weekDays[0]);
+  }, [weekDays, selectedDate]);
 
   const handleAction = async (
     action: "book" | "release" | "cancel",
@@ -154,12 +153,8 @@ export default function Home() {
     }
   };
 
-  if (!isReady) return null;
-
-  // ── Derived state ────────────────────────────────────────────────────────────
   const dateStr = formatYMD(selectedDate);
-  const todaysBookings =
-    allocation?.bookings?.filter((b) => b.date === dateStr) || [];
+  const todaysBookings = allocation?.bookings?.filter((b) => b.date === dateStr) || [];
   const selectedIsHoliday = isHoliday(dateStr);
   const designatedBatch = isDesignatedDay(1, selectedDate)
     ? 1
@@ -175,14 +170,13 @@ export default function Home() {
   const assignedUsers =
     allocation?.users?.filter((u) => u.batch === designatedBatch) || [];
 
-  // Pre-compute seat info for all 50 seats.
-  const seatInfos = new Map<number, SeatInfo>();
-  for (let i = 1; i <= 50; i++) {
-    seatInfos.set(
-      i,
-      getSeatInfo(i, todaysBookings, assignedUsers, user?.id ?? ""),
-    );
-  }
+  const seatInfos = useMemo(() => {
+    const map = new Map<number, SeatInfo>();
+    for (let i = 1; i <= 50; i++) {
+      map.set(i, getSeatInfo(i, todaysBookings, assignedUsers, user?.id ?? ""));
+    }
+    return map;
+  }, [todaysBookings, assignedUsers, user?.id]);
 
   const squadBlocks = Array.from({ length: 5 }).map((_, i) => ({
     seatStart: i * 8 + 1,
@@ -193,9 +187,11 @@ export default function Home() {
   const bookedCount = todaysBookings.filter((b) => b.type === "book").length;
   const releasedCount = todaysBookings.filter((b) => b.type === "release").length;
   const floaterOpenCount = Array.from({ length: 10 }).filter((_, i) => {
-    const info = seatInfos.get(41 + i + 0);
+    const info = seatInfos.get(41 + i);
     return info?.status === "available-floater";
   }).length;
+
+  if (!isReady) return null;
 
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-background text-foreground">
@@ -224,11 +220,7 @@ export default function Home() {
               disablePrev={disablePrevWeek}
             />
 
-            <DayTabs
-              weekDays={weekDays}
-              selectedDate={selectedDate}
-              onSelect={setSelectedDate}
-            />
+            <DayTabs weekDays={weekDays} selectedDate={selectedDate} onSelect={setSelectedDate} />
 
             <ContextBanner
               userIsDesignated={userIsDesignated}
@@ -250,7 +242,9 @@ export default function Home() {
               </div>
               <div className="rounded-2xl border border-border/70 bg-background/50 p-3">
                 <p className="text-[11px] uppercase tracking-widest text-muted-foreground">Mode</p>
-                <p className="mt-1 text-sm font-semibold">{userIsDesignated ? "Designated" : "Non-designated"}</p>
+                <p className="mt-1 text-sm font-semibold">
+                  {userIsDesignated ? "Designated" : "Non-designated"}
+                </p>
               </div>
             </div>
           </aside>

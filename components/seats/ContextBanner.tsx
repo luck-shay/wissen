@@ -25,7 +25,7 @@ export function ContextBanner({ userIsDesignated, canBookNonDesignated }: Contex
     >
       {canBookNonDesignated
         ? "Today is not your designated day. You can book any available floater or released seats right now."
-        : "Not your designated day. Floater and released seats open for booking after 3 PM today."}
+        : "Not your designated day. Floater and released seats open for booking between 3 PM and 10 AM."}
     </div>
   );
 }
