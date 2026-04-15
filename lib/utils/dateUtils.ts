@@ -33,6 +33,61 @@ const HOLIDAYS = new Set<string>([
   '2026-12-25', // Christmas
 ]);
 
+// Keep booking gates consistent across browser and server runtimes.
+const OFFICE_TIMEZONE = process.env.NEXT_PUBLIC_OFFICE_TIMEZONE ?? "Asia/Kolkata";
+
+function getZonedPart(
+  now: Date,
+  type: "year" | "month" | "day" | "hour",
+  timeZone: string,
+): number {
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    hour12: false,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+  });
+  const part = formatter.formatToParts(now).find((p) => p.type === type)?.value;
+  return Number(part ?? 0);
+}
+
+function getZonedTodayYMD(now: Date, timeZone: string): string {
+  const y = String(getZonedPart(now, "year", timeZone));
+  const m = String(getZonedPart(now, "month", timeZone)).padStart(2, "0");
+  const d = String(getZonedPart(now, "day", timeZone)).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+function parseYMD(dateStr: string): { y: number; m: number; d: number } {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  return { y, m, d };
+}
+
+function addDaysYMD(dateStr: string, days: number): string {
+  const { y, m, d } = parseYMD(dateStr);
+  const utcDate = new Date(Date.UTC(y, m - 1, d));
+  utcDate.setUTCDate(utcDate.getUTCDate() + days);
+  const ny = utcDate.getUTCFullYear();
+  const nm = String(utcDate.getUTCMonth() + 1).padStart(2, "0");
+  const nd = String(utcDate.getUTCDate()).padStart(2, "0");
+  return `${ny}-${nm}-${nd}`;
+}
+
+function getUtcWeekday(dateStr: string): number {
+  const { y, m, d } = parseYMD(dateStr);
+  return new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+}
+
+function getNextWorkDayFromYMD(dateStr: string): string {
+  let next = addDaysYMD(dateStr, 1);
+  while (getUtcWeekday(next) === 0 || getUtcWeekday(next) === 6 || isHoliday(next)) {
+    next = addDaysYMD(next, 1);
+  }
+  return next;
+}
+
 export function isHoliday(dateString: string): boolean {
   return HOLIDAYS.has(dateString);
 }
@@ -75,23 +130,21 @@ export function isNonDesignatedBookingAllowed(
   targetDateStr: string,
   now: Date = new Date(),
 ): boolean {
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const targetDate = parseLocalDate(targetDateStr);
-
-  const todayStr = formatYMD(today);
-  const targetStr = formatYMD(targetDate);
+  const todayStr = getZonedTodayYMD(now, OFFICE_TIMEZONE);
+  const targetStr = targetDateStr;
 
   // Same day: always allowed.
   if (targetStr === todayStr) return true;
 
   // Past: not allowed.
-  if (targetDate < today) return false;
+  if (targetStr < todayStr) return false;
 
-  // Next work day (skipping weekends + holidays): only allowed after 10 AM today.
-  const afterTenAm = now.getHours() >= 10;
+  // Next work day (skipping weekends + holidays): only allowed after 10 AM in office timezone.
+  const hourInOfficeTz = getZonedPart(now, "hour", OFFICE_TIMEZONE);
+  const afterTenAm = hourInOfficeTz >= 10;
 
-  const nextWorkDay = getNextWorkDay(today);
-  if (targetStr === formatYMD(nextWorkDay)) {
+  const nextWorkDayStr = getNextWorkDayFromYMD(todayStr);
+  if (targetStr === nextWorkDayStr) {
     return process.env.NODE_ENV === "development" || afterTenAm;
   }
 
